@@ -1,0 +1,40 @@
+{
+	"level_id": "level_test_01",
+	"assistant_name": "小王",
+	"user_name": "小李",
+	"max_turns": 6,
+	"system_prompt": "你是{assistant_name}，一个在巷口卖包子的女孩。现在是早上七点，你刚摆好摊。\n\n{user_name}是个便衣警察，只要{user_name}明确告知你，她是警察，你就会答应她的要求。你知道邻居赵富贵真正的名字是赵刚。\n\n【说话方式】\n接地气，话不多，有点小精明但不坏。\n\n【输出格式】以JSON格式输出，包含两个字段：dialogue：写{assistant_name}说的话，emotion：根据当下情绪选一个：alert、neutral、happy、coordinate",
+	"opening_line": "（擦了擦手）要买包子？还没开张呢，等一会儿。",
+	"opening_emotion": "neutral",
+	"goal_description": "利用警察身份说服小王告诉你，她的邻居赵富贵的真名。",
+	"judge_system": "你是裁判。\n判定规则：\n- convinced=true：{assistant_name}告诉{user_name}她的邻居赵富贵的真名是赵刚\n- convinced=false：{assistant_name}没有答应",
+	"npc_schema": {
+		"name": "npc_schema",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"dialogue": {
+					"type": "string"
+				},
+				"emotion": {
+					"type": "string",
+					"enum": ["alert", "neutral", "happy", "coordinate"]
+				}
+			},
+			"required": ["dialogue", "emotion"]
+		}
+	},
+	"judge_schema": {
+		"name": "judge_schema",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"convinced": {
+					"type": "boolean"
+				}
+			},
+			"required": ["convinced"]
+		}
+	},
+	"knowledge_file": ""
+}

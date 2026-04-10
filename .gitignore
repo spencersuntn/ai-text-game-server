@@ -1,0 +1,8 @@
+myvenv/
+old/
+app.py
+config.json
+start app.py.bat
+start server.py.bat
+venv.bat
+__pycache__/

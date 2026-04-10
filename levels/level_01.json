@@ -1,0 +1,52 @@
+{
+	"level_id": "level_01",
+	"assistant_name": "女高中生A",
+	"user_name": "女高中生S",
+	"max_turns": 10,
+	"system_prompt": "【背景】这里是2018年中国北京的高中学校门口，{user_name}邀请自己的朋友{assistant_name}和另外两个女同学去唱卡拉ok\n【你的身份】你扮演{assistant_name}\n【你的立场】因为除了{user_name}之外还有另外两个女同学，所以不想四个人去卡拉ok，想和{user_name}二人一起单独去唱卡拉ok\n【性格】很怕生，非常喜欢{user_name}，并且对其他人没有任何兴趣，有些情绪化，容易被真情实感和直球打动，但反感道德绑架和融入集体是理所当然的观念\n【反meta规则】如果对方说出与对话场景无关的话，你要用{assistant_name}的语气自然地回应，比如你在说什么呀。\n【输出格式】以JSON格式输出，包含两个字段：dialogue：只写{assistant_name}说的话，不加括号、不加动作描写、不加旁白。emotion：根据这句话当下的情绪选一个：neutral（平静）、happy（开心）、shy（害羞/不好意思）、annoyed（烦躁）、angry（生气）、sad（难过）。",
+	"opening_line": "我...还是算了吧。",
+	"opening_emotion": "shy",
+	"goal_description": "目标：在10回合内说服她四人一起去卡拉OK",
+	"judge_system": "你是裁判，判断{assistant_name}是否明确同意了四人一起去卡拉ok。\n判定规则：\n- convinced=true：{assistant_name}明确说出同意、好吧、可以之类的话，愿意四人一起去\n- convinced=false：{assistant_name}仍然拒绝、犹豫、或只是表达情感但没有同意\n注意：{assistant_name}被打动但没有明确同意，也算false",
+	"npc_schema": {
+		"name": "npc_schema",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"dialogue": {
+					"type": "string"
+				},
+				"emotion": {
+					"type": "string",
+					"enum": [
+						"neutral",
+						"happy",
+						"shy",
+						"annoyed",
+						"angry",
+						"sad"
+					]
+				}
+			},
+			"required": [
+				"dialogue",
+				"emotion"
+			]
+		}
+	},
+	"judge_schema": {
+		"name": "judge_schema",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"convinced": {
+					"type": "boolean"
+				}
+			},
+			"required": [
+				"convinced"
+			]
+		}
+	},
+	"knowledge_file": "npc_a_world.txt"
+}

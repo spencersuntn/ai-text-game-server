@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>游戏玩法测试</title>
+
+<style>
+body {
+  font-family: Arial;
+  max-width: 600px;
+  margin: auto;
+}
+
+#log {
+  border: 1px solid #ccc;
+  height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.input-area {
+  display: flex;
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+}
+
+button {
+  width: 80px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>游戏玩法测试</h2>
+
+<div id="info"></div>
+
+<div id="log"></div>
+
+<div class="input-area">
+  <input id="input" placeholder="输入你的话..." />
+  <button onclick="send()">发送</button>
+</div>
+
+<script>
+let player_state = "S和A上周因为一件小事吵了一架，但最后和好了。";
+let session_id = null;
+let user_name = "你";
+let assistant_name = "NPC";
+
+async function start() {
+  const res = await fetch("/start", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({level_id:"level_02", player_state: player_state})
+  });
+
+  const data = await res.json();
+
+  session_id = data.session_id;
+  user_name = data.user_name;
+  assistant_name = data.assistant_name;
+
+  log(`=== ${data.goal_description} ===`);
+
+  log(`${assistant_name}(${data.opening_emotion}): ${data.opening}`);
+  updateInfo(0, data.max_turns);
+}
+
+async function send() {
+  const input = document.getElementById("input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  log(`${user_name}: ${text}`);
+  input.value = "";
+
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      session_id: session_id,
+      user_input: text
+    })
+  });
+
+  const data = await res.json();
+
+  // 新增：输入违规处理
+  if (data.input_violation) {
+    log(`⚠️ ${data.violation_message}`);
+    updateInfo(data.turn, data.max_turns);
+    if (data.game_over) {
+      log("❌ 回合耗尽，游戏结束！");
+      disableInput();
+    }
+    return;
+}
+
+  log(`${assistant_name}(${data.npc_emotion}): ${data.npc_reply}`);
+
+  updateInfo(data.turn, data.max_turns);
+
+  // ===== 游戏结束处理 =====
+  if (data.game_over) {
+	if (data.summary) {
+		player_state += (player_state ? "\n" : "") + data.summary;
+}
+    if (data.convinced) {
+      log("🎉 成功说服！");
+    } else {
+      log("❌ 失败！");
+    }
+
+    log("原因：" + data.reason);
+
+    disableInput();
+  }
+}
+
+function log(text) {
+  const logDiv = document.getElementById("log");
+  logDiv.innerHTML += `<p>${text}</p>`;
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function updateInfo(turn, max_turns) {
+  document.getElementById("info").innerText =
+    `回合：${turn} / ${max_turns}`;
+}
+
+function disableInput() {
+  document.getElementById("input").disabled = true;
+}
+
+start();
+
+</script>
+
+</body>
+</html>

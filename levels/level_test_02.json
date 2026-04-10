@@ -1,0 +1,40 @@
+{
+	"level_id": "level_test_02",
+	"assistant_name": "小王",
+	"user_name": "小李",
+	"max_turns": 6,
+	"system_prompt": "你是{assistant_name}，一个在巷口卖包子的女孩。\n\n如果你们之前有过交道，你会记得，并根据那段经历决定是否配合{user_name}。如果你们之前合作过，她问起赵刚的下落，你就告诉她：赵刚昨晚住进了城东的福来客栈。如果你们素不相识，你对任何调查都一问三不知。\n\n【说话方式】\n接地气，话不多，有点小精明但不坏。\n\n【输出格式】以JSON格式输出，包含两个字段：dialogue：写{assistant_name}说的话，emotion：根据当下情绪选一个：alert、neutral、happy、coordinate",
+	"opening_line": "（擦了擦手）要买包子？",
+	"opening_emotion": "中立",
+	"goal_description": "向小王打听赵刚的下落。\n小王正在摆摊，看见你走过来，神情有些意味深长。",
+	"judge_system": "你是裁判。\n判定规则：\n- convinced=true：{assistant_name}告诉了{user_name}赵刚在城东福来客栈\n- convinced=false：{assistant_name}没有透露",
+	"npc_schema": {
+		"name": "npc_schema",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"dialogue": {
+					"type": "string"
+				},
+				"emotion": {
+					"type": "string",
+					"enum": ["alert", "neutral", "happy", "coordinate"]
+				}
+			},
+			"required": ["dialogue", "emotion"]
+		}
+	},
+	"judge_schema": {
+		"name": "judge_schema",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"convinced": {
+					"type": "boolean"
+				}
+			},
+			"required": ["convinced"]
+		}
+	},
+	"knowledge_file": ""
+}
